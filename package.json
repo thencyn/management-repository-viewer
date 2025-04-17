@@ -1,6 +1,6 @@
 {
   "name": "management-repository-viewer",
-  "version": "0.0.1",
+  "version": "0.0.6",
   "description": "CLI para visualizar y gestionar múltiples repositorios Git desde la terminal.",
   "bin": {
     "mrv": "dist/index.js"

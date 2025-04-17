@@ -125,7 +125,7 @@ export async function configFiltroCodigo() {
 		path: "",
 	});
 	const listaCodigos = new Set(
-		listaRepos.filter((repo) => repo.codigo).map((repo) => repo.codigo)
+		listaRepos.filter((repo) => repo.codigo).map(repo => repo.codigo)
 	);
 	// if (listaCodigos.size === 0) {
 	//   console.log('No hay códigos disponibles.');
@@ -169,17 +169,14 @@ export async function configFiltroTag() {
 		path: "",
 	});
 	const listaTags = new Set(listaRepos.flatMap((x) => x.tag).filter((x) => x));
-	// if (listaCodigos.size === 0) {
-	//   console.log('No hay códigos disponibles.');
-	//   return;
-	// }
+
 	try {
 		const { tag } = await inquirer.prompt([
 			{
 				type: "list",
 				name: "tag",
 				message: "Seleccione Tag:",
-				choices: Array.from(listaTags),
+				choices: Array.from(listaTags).sort((x, y) => x.localeCompare(y)),
 			},
 		]);
 
@@ -211,10 +208,7 @@ export async function configFiltroAlias() {
 		path: "",
 	});
 	const listaAlias = new Set(listaRepos.map((x) => x.alias));
-	// if (listaCodigos.size === 0) {
-	//   console.log('No hay códigos disponibles.');
-	//   return;
-	// }
+
 	try {
 		const { alias } = await inquirer.prompt([
 			{
@@ -255,6 +249,99 @@ export async function selecccionarOpcionesAbrir() {
 			},
 		]);
 		return opcion;
+	} catch (error: any) {
+		if (error.isTtyError) {
+			console.log(chalk.red("❌ La terminal no soporta prompts interactivos."));
+		} else if (error.message?.includes("User force closed")) {
+			console.log(chalk.yellow("\n🛑 Operación cancelada por el usuario."));
+		} else {
+			console.error(chalk.red("Ocurrió un error inesperado:"), error);
+		}
+		process.exit(1);
+	}
+}
+
+export async function selecccionarOpcionesParaFiltrar(): Promise<"Tag" | "Codigo" | "Sin Filtro"> {
+	try {
+		const { opcion } = await inquirer.prompt([
+			{
+				type: "list",
+				name: "opcion",
+				message: "Seleccione opción para filtrar:",
+				choices: ["Tag", "Codigo", "Sin Filtro"],
+			},
+		]);
+		return opcion;
+	} catch (error: any) {
+		if (error.isTtyError) {
+			console.log(chalk.red("❌ La terminal no soporta prompts interactivos."));
+		} else if (error.message?.includes("User force closed")) {
+			console.log(chalk.yellow("\n🛑 Operación cancelada por el usuario."));
+		} else {
+			console.error(chalk.red("Ocurrió un error inesperado:"), error);
+		}
+		process.exit(1);
+	}
+}
+
+
+export async function selecccionarMultipleProyectoAlias(listaproyectos: IRepoConfiguracion[]): Promise<string[]> {
+	try {
+		const  listaSeleccionados = await inquirer.prompt([
+			{
+				type: "checkbox",
+				name: "opcion",
+				message: "Selecciona los proyectos: ",
+				choices: listaproyectos.map(x => ({ name: x.alias, value: x.alias })).sort((x, y) => x.name.localeCompare(y.name)),
+			},
+		]);
+		return listaSeleccionados.opcion;
+	} catch (error: any) {
+		if (error.isTtyError) {
+			console.log(chalk.red("❌ La terminal no soporta prompts interactivos."));
+		} else if (error.message?.includes("User force closed")) {
+			console.log(chalk.yellow("\n🛑 Operación cancelada por el usuario."));
+		} else {
+			console.error(chalk.red("Ocurrió un error inesperado:"), error);
+		}
+		process.exit(1);
+	}
+}
+
+export async function selecccionarOpcionAgregarQuitar(): Promise<"Agregar" | "Quitar"> {
+	try {
+		const { opcion } = await inquirer.prompt([
+			{
+				type: "list",
+				name: "opcion",
+				message: "Que quieres hacer ?:",
+				choices: ["Agregar", "Quitar"],
+			},
+		]);
+		return opcion;
+	} catch (error: any) {
+		if (error.isTtyError) {
+			console.log(chalk.red("❌ La terminal no soporta prompts interactivos."));
+		} else if (error.message?.includes("User force closed")) {
+			console.log(chalk.yellow("\n🛑 Operación cancelada por el usuario."));
+		} else {
+			console.error(chalk.red("Ocurrió un error inesperado:"), error);
+		}
+		process.exit(1);
+	}
+}
+
+
+export async function ingreseTag() {
+	try {
+		const { tag } = await inquirer.prompt([
+			{
+				type: "input",
+				name: "tag",
+				message: "Ingrese tag:",
+			},
+		]);
+		return tag;
 	} catch (error: any) {
 		if (error.isTtyError) {
 			console.log(chalk.red("❌ La terminal no soporta prompts interactivos."));

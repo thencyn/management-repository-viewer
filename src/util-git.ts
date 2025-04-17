@@ -10,7 +10,7 @@ const Colores = {
     blink: "\x1b[5m",
     reverse: "\x1b[7m",
     hidden: "\x1b[8m",
-    
+
     fg: {
         black: "\x1b[30m",
         red: "\x1b[31m",
@@ -38,12 +38,12 @@ const Colores = {
 };
 
 async function verificarDirectorioGit(directorio: IRepoConfiguracion): Promise<IGitRutasInformacion> {
-    
-    
+
+
     const listaRamas: IGitInformacionRama[] = [];
     // const tieneOrigenRemoto = await verificarOrigenRemoto(directorio);
     const git: SimpleGit = simpleGit(directorio.path);
-    const isRepo: boolean = await git.checkIsRepo();
+    const isRepo: boolean = await verificarRepositorioGit(directorio.path);
     if (!isRepo) {
     return {
         path: directorio.path,
@@ -52,7 +52,7 @@ async function verificarDirectorioGit(directorio: IRepoConfiguracion): Promise<I
         jerarquia: directorio.jerarquia,
         esRepositorio: false,
     };
-    
+
     }
 
     const ramasLocales = (await git.branchLocal()).all;
@@ -135,16 +135,16 @@ export async function procesoDirectoriosGit(listaDirectorios: IRepoConfiguracion
         const informacion = await verificarDirectorioGit(item);
         let texto = `${Colores.bg.green}${Colores.fg.black}${informacion.alias}${Colores.reset}\n`;
         if (!informacion.esRepositorio) {
-            texto += ` ${Colores.fg.red}~ NO ES UN REPOSITORIO VALIDO ${Colores.reset}`;	
+            texto += ` ${Colores.fg.red}~ NO ES UN REPOSITORIO VALIDO ${Colores.reset}`;
         } else if (informacion.esRepositorio && informacion.ramaActual) {
             if (informacion.ramaActual.pendientesBajar > 0) {
-                texto += `\t${Colores.fg.red}~${informacion.ramaActual.nombreRama}${Colores.reset}`;	
+                texto += `\t${Colores.fg.black}${Colores.bg.red}~${informacion.ramaActual.nombreRama}${Colores.reset}`;
             } else if (informacion.ramaActual.archivosConCambios?.length > 0) {
-                texto += `\t${Colores.fg.yellow}~${informacion.ramaActual.nombreRama}${Colores.reset}`;	
+                texto += `\t${Colores.fg.black}${Colores.bg.yellow}~${informacion.ramaActual.nombreRama}${Colores.reset}`;
             } else if (informacion.ramaActual.archivosAgregados?.length > 0) {
-                texto += `\t${Colores.fg.green}~${informacion.ramaActual.nombreRama}${Colores.reset}`;	
+                texto += `\t${Colores.fg.black}${Colores.bg.green}~${informacion.ramaActual.nombreRama}${Colores.reset}`;
             } else if (informacion.ramaActual.archivosEliminados?.length > 0) {
-                texto += `\t${Colores.fg.red}~${informacion.ramaActual.nombreRama}${Colores.reset}`;	
+                texto += `\t${Colores.fg.black}${Colores.bg.red}~${informacion.ramaActual.nombreRama}${Colores.reset}`;
             } else {
                 texto += `\t~${informacion.ramaActual.nombreRama}`;
             }
@@ -156,10 +156,16 @@ export async function procesoDirectoriosGit(listaDirectorios: IRepoConfiguracion
             texto += '\n';
             if (informacion.listaRamasLocales) {
                 for (const iterator of informacion.listaRamasLocales.filter(x => x.nombreRama !== informacion.ramaActual?.nombreRama)) {
-                    texto += `\t${Colores.fg.cyan}${iterator.nombreRama}${Colores.reset} ${Colores.fg.red}${iterator.cantidadCambiosBajar ?? 0}↓${Colores.reset}\n`;
+                    texto += `\t${Colores.fg.black}${!iterator.cantidadCambiosBajar ? Colores.fg.white : Colores.bg.red}${iterator.nombreRama}${Colores.reset} ${Colores.fg.red}${iterator.cantidadCambiosBajar ?? 0}↓${Colores.reset}\n`;
                 }
             }
         }
         console.log(texto);
     }
+}
+
+export async function verificarRepositorioGit(path: string) {
+	const git: SimpleGit = simpleGit(path);
+    return await git.checkIsRepo();
+
 }
