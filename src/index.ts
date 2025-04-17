@@ -209,7 +209,7 @@ program
             console.log('Debe ingresar el código de los proyectos.');
             return;
         }
-        const listaRepos = obtenerReposConfiguracion();
+        const listaRepos = obtenerReposConfiguracion({codigo, alias: '', jerarquia: '', tag: [], path: ''});
         if (listaRepos.length === 0) {
             console.log('No se encontraron proyectos con ese código.');
             return;
