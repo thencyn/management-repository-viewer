@@ -52,6 +52,7 @@ Vamos a suponer que en este directorio existe un repositorio valido de GIT: **C:
   **codigo:** Phaser $\rightarrow$ nombre de la primera carpeta despues de la carpeta base
 4) Guarda los datos en el archivo de configuracion
 
+En caso de no especificar el parámetro -p, se tomará por defecto la ruta desde donde se está ejecutando el prompt.
 
 
 ### 🔹 mrv del

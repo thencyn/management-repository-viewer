@@ -1,11 +1,16 @@
 import fs from "fs";
 import path from "path";
+import os from 'os';
 import { MrvConfiguracion, IRepoConfiguracion } from "./interfaces";
 import chalk from "chalk";
 import { verificarRepositorioGit } from "./util-git";
 import readline from 'readline';
 
-const CONFIG_FILE = path.resolve(__dirname, "./mrv.config.json");
+const CONFIGDIR = path.join(os.homedir(), '.management-repository-viewer');
+const CONFIG_FILE = path.resolve(CONFIGDIR, "./mrv.config.json");
+if (!fs.existsSync(CONFIGDIR)) {
+	fs.mkdirSync(CONFIGDIR, { recursive: true });
+}
 
 export function grabarNuevoRepo(item: IRepoConfiguracion, esMasivo: boolean = false) {
 	if (item.alias.trim() === "") {

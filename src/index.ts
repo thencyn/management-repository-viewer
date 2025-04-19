@@ -102,10 +102,10 @@ program
 program
 	.command('add-auto')
 	.description('Agregar un listado de repositorios al registro (2 niveles de profundidad)')
-	.option('-p, --path <path>', 'Ruta base donde buscar repositorios de GIT')
+	.option('-p, --path <path>', 'Ruta base donde buscar repositorios de GIT, si no se encuentra se tomara la ruta actual.')
 	.option('-t, --tag <tags>', 'Tags separados por coma, que se  utilizaran para todos los repos encontrados.')
 	.action(async options => {
-		const { path } = options;
+		const path  = options.path || process.cwd();
 		if (!path) {
 			console.log(chalk.red('Debe proporcionar una ruta con -p'));
 			return;
